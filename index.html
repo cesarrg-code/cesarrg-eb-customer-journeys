@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5 Key Elements for Customer Journey Maps</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Mulish', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0A2A2E;
+      color: #FFFFFF;
+      overflow: hidden;
+    }
+
+    .slide {
+      display: none;
+      min-height: 100vh;
+      padding: 60px 80px;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 4rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 40px;
+    }
+
+    .subtitle {
+      font-size: 1.8rem;
+      font-weight: 400;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+
+    .accent {
+      color: #E8663A;
+    }
+
+    .large-number {
+      font-size: 8rem;
+      font-weight: 800;
+      color: #E8663A;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+
+    .element-title {
+      font-size: 4rem;
+      font-weight: 700;
+      margin-bottom: 0;
+      color: #E8663A;
+    }
+
+    .element-number {
+      font-size: 4rem;
+      font-weight: 800;
+      color: #E8663A;
+      margin-right: 30px;
+    }
+
+    .element-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .journey-table {
+      display: grid;
+      grid-template-columns: 130px repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 30px;
+    }
+
+    .journey-label {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #FFFFFF;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .journey-cell {
+      font-size: 1rem;
+      padding: 10px 14px;
+      margin-bottom: 0;
+      text-align: center;
+    }
+
+    .checklist {
+      list-style: none;
+      font-size: 2rem;
+      line-height: 1.8;
+    }
+
+    .checklist li {
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+    }
+
+    .checklist li::before {
+      content: '✅';
+      font-size: 2.5rem;
+      margin-right: 20px;
+    }
+
+    .bullet-list {
+      list-style: none;
+      font-size: 1.8rem;
+      line-height: 1.6;
+      margin-top: 30px;
+    }
+
+    .bullet-list li {
+      margin-bottom: 20px;
+      padding-left: 40px;
+      position: relative;
+    }
+
+    .bullet-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: #E8663A;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .question-box {
+      background: #4A90E2;
+      padding: 20px 30px;
+      border-radius: 8px;
+      font-size: 1.3rem;
+      font-style: italic;
+      display: inline-block;
+      margin: 15px;
+      transform: rotate(-2deg);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .question-box:nth-child(2n) {
+      transform: rotate(2deg);
+    }
+
+    .step-box {
+      background: #4A90E2;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      border: 3px solid #FFFFFF;
+    }
+
+    .step-box.intention {
+      background: #00CED1;
+    }
+
+    .step-box.touchpoint {
+      background: #32CD32;
+    }
+
+    .step-box.pain {
+      background: #FA8072;
+    }
+
+    .step-box.opportunity {
+      background: #FFD700;
+      color: #0A2A2E;
+    }
+
+    .arrow {
+      font-size: 3rem;
+      color: #FFFFFF;
+      margin: 15px 0;
+      text-align: center;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 30px;
+      right: 60px;
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+
+    .footer a {
+      color: #E8663A;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+
+    .nav-controls {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      background: transparent;
+      color: #E8663A;
+      border: 2px solid #E8663A;
+      padding: 10px 20px;
+      font-size: 1.5rem;
+      font-family: 'Mulish', sans-serif;
+      font-weight: 600;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-btn:hover {
+      background: #E8663A;
+      color: #0A2A2E;
+      transform: scale(1.1);
+    }
+
+    .nav-btn:disabled {
+      border-color: #555;
+      color: #555;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .progress {
+      color: #FFFFFF;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .follow-btn {
+      background: #E8663A;
+      color: #FFFFFF;
+      border: none;
+      padding: 18px 40px;
+      font-size: 1.5rem;
+      font-family: 'Mulish', sans-serif;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 40px;
+    }
+
+    .follow-btn:hover {
+      background: #FF7A4D;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(232, 102, 58, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .slide {
+        padding: 40px 30px;
+      }
+      
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      h2 {
+        font-size: 1.8rem;
+      }
+      
+      .large-number {
+        font-size: 5rem;
+      }
+      
+      .element-number {
+        font-size: 4rem;
+      }
+
+      .element-title {
+        font-size: 2rem;
+      }
+
+      .bullet-list {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Script and ideas by César Rodríguez -->
+
+  <!-- Slide 1: Title -->
+  <section class="slide active" id="slide-1">
+    <canvas id="canvas-1"></canvas> 
+    <div class="content">
+      <h1>
+        5 Key Elements<br>
+        for <span class="accent">Customer<br>Journey Maps</span>
+      </h1>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 2: Purpose -->
+  <section class="slide" id="slide-2">
+    <div class="content">
+      <h1>
+        <span class="accent">Customer journey maps</span><br>
+        are important tools to<br>
+        drive a design<br>
+        conversation
+      </h1>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 3: Challenges -->
+  <section class="slide" id="slide-3">
+    <div class="content">
+      <h2>But sometimes can be <span class="accent">intimidating</span>...</h2>
+      <div style="margin-top: 40px;">
+        <div class="question-box">How many steps should I consider?</div>
+        <div class="question-box">What level of detail is relevant?</div>
+        <div class="question-box">When should I consider a map complete?</div>
+        <div class="question-box">I'm not a visual person...</div>
+      </div>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 4: Focus -->
+  <section class="slide" id="slide-4">
+    <div class="content">
+      <h1>
+        Focus on mapping the<br>
+        <span class="accent">key interactions</span> of a<br>
+        customer while using<br>
+        your product or service.
+      </h1>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 5: Virtuous Cycle -->
+  <section class="slide" id="slide-5">
+    <canvas id="canvas-5"></canvas>
+    <div class="content">
+      <h1 class="accent">Virtuous Cycle.</h1>
+      <div style="margin-top: 50px;">
+        <h2>The more you socialize it:</h2>
+        <ul class="checklist">
+          <li>More feedback</li>
+          <li>more insights</li>
+          <li>More ways to validate</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 6: Start with 5 -->
+  <section class="slide" id="slide-6">
+    <canvas id="canvas-6"></canvas>
+    <div class="content" style="text-align: center;">
+      <div class="large-number">5</div>
+      <h1>Start with these five<br>elements</h1>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 7: Element 1 - Moments -->
+  <section class="slide" id="slide-7">
+    <div class="content">
+      <div class="element-header">
+        <span class="element-number">1</span>
+        <span class="element-title">Moments</span>
+      </div>
+      <div style="margin-top: 30px;">
+        <div class="step-box">Registration</div>
+
+      </div>
+      <ul class="bullet-list">
+        <li>List the key steps of the customer experience.</li>
+        <li>Keep it simple.</li>
+        <li><span class="accent">5-7 key moments is a good start.</span> Evolve as you need.</li>
+      </ul>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 8: Element 2 - Intention -->
+  <section class="slide" id="slide-8">
+    <div class="content">
+      <div class="element-header">
+        <span class="element-number">2</span>
+        <span class="element-title">Customer intention</span>
+      </div>
+      <div style="margin-top: 30px;">
+        <div class="step-box">Registration</div>
+        <div class="step-box intention">Speed & convenience</div>
+      </div>
+      <ul class="bullet-list">
+        <li>For each step, write the key <span class="accent">intention</span> of the customer.</li>
+        <li>This is a reminder for driving the conversation around the customer's goal.</li>
+      </ul>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 9: Element 3 - Touch-points -->
+  <section class="slide" id="slide-9">
+    <div class="content">
+      <div class="element-header">
+        <span class="element-number">3</span>
+        <span class="element-title">Touch-points</span>
+      </div>
+      <div style="margin-top: 30px;">
+        <div class="step-box">Registration</div>
+        <div class="step-box intention">Speed & convenience</div>
+        <div class="step-box touchpoint">Web App</div>
+      </div>
+      <ul class="bullet-list">
+        <li>Touch-points are tool or mechanism the customer uses to solve their problem.</li>
+        <li>They can be direct interactions with people or technology features (emails, forms, etc...).</li>
+        <li><span class="accent">These are important clues for optimization.</span></li>
+      </ul>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 10: Element 4 - Pain-points -->
+  <section class="slide" id="slide-10">
+    <div class="content">
+      <div class="element-header">
+        <span class="element-number">4</span>
+        <span class="element-title">Pain-points</span>
+      </div>
+      <div style="margin-top: 30px;">
+        <div class="step-box">Registration</div>
+        <div class="step-box intention">Speed & convenience</div>
+        <div class="step-box touchpoint">Web App</div>
+        <div class="step-box pain">Info is confusing</div>
+      </div>
+      <ul class="bullet-list">
+        <li>List the challenges and capture key insights of your learnings.</li>
+        <li>This is a great place to map assumptions and open questions.</li>
+      </ul>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 11: Element 5 - Opportunities -->
+  <section class="slide" id="slide-11">
+    <div class="content">
+      <div class="element-header">
+        <span class="element-number">5</span>
+        <span class="element-title">Opportunities</span>
+      </div>
+      <div style="margin-top: 30px;">
+        <div class="step-box">Registration</div>
+        <div class="step-box intention">Speed & convenience</div>
+        <div class="step-box touchpoint">Web App</div>
+        <div class="step-box pain">Info is confusing</div>
+        <div class="step-box opportunity">LLMs-driven UX</div>
+      </div>
+      <ul class="bullet-list">
+        <li>As you progress on the design, new ideas can be included in the map, such as opportunities.</li>
+        <li>Leverage prioritization techniques to test new assumptions.</li>
+      </ul>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 12: Journey Map Example -->
+  <section class="slide" id="slide-12">
+    <div class="content" style="max-width: 1400px;">
+      <h2>Example: <span class="accent">Registration Journey</span></h2>
+      <div class="journey-table">
+
+        <div class="journey-label">Moments</div>
+        <div class="journey-cell step-box">Registration</div>
+        <div class="journey-cell step-box">Email Verification</div>
+        <div class="journey-cell step-box">Profile Setup</div>
+        <div class="journey-cell step-box">First Login</div>
+        <div class="journey-cell step-box">Onboarding Tour</div>
+
+        <div class="journey-label">Intention</div>
+        <div class="journey-cell step-box intention">Speed & convenience</div>
+        <div class="journey-cell step-box intention">Confirm identity fast</div>
+        <div class="journey-cell step-box intention">Get started quickly</div>
+        <div class="journey-cell step-box intention">Access the product now</div>
+        <div class="journey-cell step-box intention">Understand the product</div>
+
+        <div class="journey-label">Touch-points</div>
+        <div class="journey-cell step-box touchpoint">Web App</div>
+        <div class="journey-cell step-box touchpoint">Email client</div>
+        <div class="journey-cell step-box touchpoint">Web App form</div>
+        <div class="journey-cell step-box touchpoint">Mobile App</div>
+        <div class="journey-cell step-box touchpoint">In-app guide</div>
+
+        <div class="journey-label">Pain-points</div>
+        <div class="journey-cell step-box pain">Info is confusing</div>
+        <div class="journey-cell step-box pain">Email goes to spam</div>
+        <div class="journey-cell step-box pain">Too many required fields</div>
+        <div class="journey-cell step-box pain">Forgot password flow</div>
+        <div class="journey-cell step-box pain">Tutorial feels generic</div>
+
+        <div class="journey-label">Opportunities</div>
+        <div class="journey-cell step-box opportunity">LLMs-driven UX</div>
+        <div class="journey-cell step-box opportunity">SMS fallback option</div>
+        <div class="journey-cell step-box opportunity">Progressive profiling</div>
+        <div class="journey-cell step-box opportunity">Social login / Passkeys</div>
+        <div class="journey-cell step-box opportunity">Personalized path</div>
+
+      </div>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 13: Remember -->
+  <section class="slide" id="slide-13">
+    <div class="content">
+      <h1><span class="accent">Remember</span></h1>
+      <h1 style="margin-top: 40px;">
+        Journey maps are not<br>
+        one-size-fits-all.
+      </h1>
+      <h2 style="margin-top: 60px;">
+        Adapt it to your project<br>
+        needs 👍
+      </h2>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Slide 14: CTA -->
+  <section class="slide" id="slide-14">
+    <canvas id="canvas-14"></canvas>
+    <div class="content">
+      <h1><span class="accent">Useful?</span><br>Reshare</h1>
+      <div style="margin-top: 60px;">
+        <p class="subtitle">Checkout more ideas like this at <a href="https://cesarrg.com" target="_blank" class="accent" style="text-decoration: none;">cesarrg.com</a></p>
+        <p class="subtitle" style="margin-top: 30px;">Every week I share knowledge bites on design, tech innovation, and creativity.</p>
+        <a href="https://www.cesarrg.com/#/portal/signup" target="_blank" class="follow-btn">+ Follow</a>
+      </div>
+    </div>
+    <div class="footer">
+      <a href="https://cesarrg.com">cesarrg.com</a>
+    </div>
+  </section>
+
+  <!-- Navigation -->
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">‹</button>
+    <span class="progress" id="progress">1 / 14</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">›</button>
+  </div>
+
+  <script>
+    // Animation inspired by "The Way of Code" by Rick Rubin
+    // Creative interpretation for this presentation
+
+    let currentSlide = 1;
+    const totalSlides = 14;
+    let activeAnimations = new Map();
+
+    function updateSlide() {
+      document.querySelectorAll('.slide').forEach(slide => {
+        slide.classList.remove('active');
+      });
+      document.getElementById(`slide-${currentSlide}`).classList.add('active');
+      document.getElementById('progress').textContent = `${currentSlide} / ${totalSlides}`;
+      document.getElementById('prevBtn').disabled = currentSlide === 1;
+      document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+
+      // Start/stop animations based on active slide
+      manageAnimations();
+    }
+
+    function changeSlide(direction) {
+      currentSlide += direction;
+      if (currentSlide < 1) currentSlide = 1;
+      if (currentSlide > totalSlides) currentSlide = totalSlides;
+      updateSlide();
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        if (currentSlide < totalSlides) changeSlide(1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (currentSlide > 1) changeSlide(-1);
+      }
+    });
+
+    // Animation Management
+    function manageAnimations() {
+      // Stop all animations
+      activeAnimations.forEach((animId, canvasId) => {
+        if (animId) cancelAnimationFrame(animId);
+      });
+      activeAnimations.clear();
+
+      // Start animation for current slide if it has one
+      if (currentSlide === 1) {
+        startTitleAnimation();
+      } else if (currentSlide === 5) {
+        startVirtuousCycleAnimation();
+      } else if (currentSlide === 6) {
+        startStructureAnimation();
+      } else if (currentSlide === 14) {
+        startConclusionAnimation();
+      }
+    }
+
+    // Slide 1: Title Animation - Single flowing path across entire slide
+    function startTitleAnimation() {
+      const canvas = document.getElementById('canvas-1');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const particleCount = 50;
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: -50,
+          y: canvas.height / 2,
+          speed: 0.8 + Math.random() * 1.2,
+          size: 2 + Math.random() * 2,
+          opacity: 0.1 + Math.random() * 0.15,
+          offset: Math.random() * Math.PI * 2
+        });
+      }
+
+      let time = 0;
+
+      function animate() {
+        ctx.fillStyle = 'rgba(10, 42, 46, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        time += 0.01;
+
+        particles.forEach((p, index) => {
+          // Move particle
+          p.x += p.speed;
+          
+          // Wave motion across entire slide
+          const waveAmplitude = 80;
+          const waveFrequency = 0.008;
+          p.y = canvas.height / 2 + Math.sin(p.x * waveFrequency + p.offset + time) * waveAmplitude;
+
+          // Reset when off screen
+          if (p.x > canvas.width + 50) {
+            p.x = -50;
+          }
+
+          // Draw particle - very transparent
+          ctx.fillStyle = `rgba(232, 102, 58, ${p.opacity})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        const animId = requestAnimationFrame(animate);
+        activeAnimations.set('canvas-1', animId);
+      }
+
+      animate();
+    }
+
+    // Slide 5: Virtuous Cycle - Orbital rotation in upper right corner
+    function startVirtuousCycleAnimation() {
+      const canvas = document.getElementById('canvas-5');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const centerX = canvas.width - 200;
+      const centerY = 150;
+      const particles = [];
+      const orbits = 4;
+      const particlesPerOrbit = 15;
+
+      for (let orbit = 0; orbit < orbits; orbit++) {
+        const radius = 40 + orbit * 35;
+        for (let i = 0; i < particlesPerOrbit; i++) {
+          particles.push({
+            angle: (i / particlesPerOrbit) * Math.PI * 2,
+            radius: radius,
+            baseRadius: radius,
+            speed: 0.01 + orbit * 0.005,
+            size: 2.5 - orbit * 0.3,
+            orbit: orbit
+          });
+        }
+      }
+
+      let time = 0;
+
+      function animate() {
+        ctx.fillStyle = 'rgba(10, 42, 46, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        time += 0.02;
+
+        particles.forEach(p => {
+          p.angle += p.speed;
+          
+          // Pulsing radius
+          const pulse = Math.sin(time + p.orbit) * 8;
+          p.radius = p.baseRadius + pulse;
+
+          const x = centerX + Math.cos(p.angle) * p.radius;
+          const y = centerY + Math.sin(p.angle) * p.radius;
+
+          const opacity = 0.4 + Math.sin(time + p.orbit * 0.5) * 0.3;
+          ctx.fillStyle = `rgba(74, 144, 226, ${opacity})`;
+          ctx.beginPath();
+          ctx.arc(x, y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Draw orbital paths
+        ctx.strokeStyle = 'rgba(232, 102, 58, 0.15)';
+        ctx.lineWidth = 1.5;
+        for (let orbit = 0; orbit < orbits; orbit++) {
+          ctx.beginPath();
+          const radius = 40 + orbit * 35;
+          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        const animId = requestAnimationFrame(animate);
+        activeAnimations.set('canvas-5', animId);
+      }
+
+      animate();
+    }
+
+    // Slide 6: Structure Formation - Building blocks
+    function startStructureAnimation() {
+      const canvas = document.getElementById('canvas-6');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const gridSize = 40;
+      const cols = Math.floor(canvas.width / gridSize);
+      const rows = Math.floor(canvas.height / gridSize);
+
+      for (let i = 0; i < 5; i++) {
+        const col = Math.floor(Math.random() * cols);
+        const row = Math.floor(Math.random() * rows);
+        
+        particles.push({
+          x: col * gridSize + gridSize / 2,
+          y: row * gridSize + gridSize / 2,
+          targetX: col * gridSize + gridSize / 2,
+          targetY: row * gridSize + gridSize / 2,
+          size: 0,
+          targetSize: 20 + i * 8,
+          color: `hsl(${20 + i * 40}, 70%, 60%)`,
+          influence: 60 + i * 30,
+          phase: i
+        });
+      }
+
+      let time = 0;
+
+      function animate() {
+        ctx.fillStyle = 'rgba(10, 42, 46, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        time += 0.02;
+
+        particles.forEach((p, index) => {
+          // Grow animation
+          if (p.size < p.targetSize) {
+            p.size += 0.5;
+          }
+
+          // Gentle float
+          const floatX = Math.sin(time + p.phase) * 15;
+          const floatY = Math.cos(time * 0.7 + p.phase) * 15;
+          
+          p.x = p.targetX + floatX;
+          p.y = p.targetY + floatY;
+
+          // Draw main particle
+          const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+          gradient.addColorStop(0, p.color.replace('60%', '70%'));
+          gradient.addColorStop(1, 'rgba(232, 102, 58, 0)');
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Draw influence rings
+          ctx.strokeStyle = `rgba(232, 102, 58, ${0.1 + Math.sin(time + index) * 0.05})`;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.influence + Math.sin(time + index) * 10, 0, Math.PI * 2);
+          ctx.stroke();
+        });
+
+        const animId = requestAnimationFrame(animate);
+        activeAnimations.set('canvas-6', animId);
+      }
+
+      animate();
+    }
+
+    // Slide 13: Conclusion - Calm confident particles
+    function startConclusionAnimation() {
+      const canvas = document.getElementById('canvas-14');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const particleCount = 60;
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          size: 2 + Math.random() * 2,
+          opacity: 0.3 + Math.random() * 0.4
+        });
+      }
+
+      let time = 0;
+
+      function animate() {
+        ctx.fillStyle = 'rgba(10, 42, 46, 0.08)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        time += 0.01;
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // Boundary bounce
+          if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+          if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+          // Gentle attraction to center
+          const dx = canvas.width / 2 - p.x;
+          const dy = canvas.height / 2 - p.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance > 200) {
+            p.vx += dx * 0.00001;
+            p.vy += dy * 0.00001;
+          }
+
+          // Draw particle
+          const pulseOpacity = p.opacity * (0.8 + Math.sin(time + p.x * 0.01) * 0.2);
+          ctx.fillStyle = `rgba(0, 206, 209, ${pulseOpacity})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        const animId = requestAnimationFrame(animate);
+        activeAnimations.set('canvas-14', animId);
+      }
+
+      animate();
+    }
+
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      const canvases = ['canvas-1', 'canvas-5', 'canvas-6', 'canvas-14'];
+      canvases.forEach(id => {
+        const canvas = document.getElementById(id);
+        if (canvas) {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+      });
+
+      // Debounce animation restart to avoid excessive reloads during resize
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        manageAnimations();
+      }, 200);
+    });
+
+    // Initialize
+    updateSlide();
+  </script>
+</body>
+</html>
