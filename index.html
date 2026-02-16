@@ -22,7 +22,8 @@
     .slide {
       display: none;
       min-height: 100vh;
-      padding: 60px 80px;
+      min-height: 100dvh;
+      padding: 60px 80px 120px;
       position: relative;
       align-items: center;
       justify-content: center;
@@ -301,31 +302,106 @@
 
     @media (max-width: 768px) {
       .slide {
-        padding: 40px 30px;
+        padding: 36px 24px 110px;
+        align-items: flex-start;
+        min-height: 100dvh;
       }
-      
+
       h1 {
-        font-size: 2.5rem;
+        font-size: 1.9rem;
+        margin-bottom: 20px;
       }
-      
+
       h2 {
-        font-size: 1.8rem;
+        font-size: 1.4rem;
+        margin-bottom: 24px;
       }
-      
+
+      .subtitle {
+        font-size: 1.2rem;
+      }
+
       .large-number {
-        font-size: 5rem;
-      }
-      
-      .element-number {
         font-size: 4rem;
       }
 
+      .element-number {
+        font-size: 2.5rem;
+        margin-right: 16px;
+      }
+
       .element-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
+      }
+
+      .element-header {
+        margin-bottom: 20px;
+      }
+
+      .checklist {
+        font-size: 1.3rem;
+        line-height: 1.6;
+      }
+
+      .checklist li {
+        margin-bottom: 16px;
+      }
+
+      .checklist li::before {
+        font-size: 1.6rem;
+        margin-right: 12px;
       }
 
       .bullet-list {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
+        margin-top: 16px;
+      }
+
+      .bullet-list li {
+        margin-bottom: 12px;
+        padding-left: 24px;
+      }
+
+      .question-box {
+        display: block;
+        margin: 10px 0;
+        transform: none !important;
+        font-size: 1.1rem;
+        padding: 14px 20px;
+        width: 100%;
+      }
+
+      .step-box {
+        font-size: 1rem;
+        padding: 10px 16px;
+        margin-bottom: 10px;
+      }
+
+      .footer {
+        bottom: auto;
+        top: auto;
+        position: relative;
+        text-align: right;
+        margin-top: 20px;
+        right: 0;
+        font-size: 0.9rem;
+      }
+
+      .follow-btn {
+        padding: 14px 28px;
+        font-size: 1.2rem;
+        margin-top: 24px;
+      }
+
+      .nav-controls {
+        bottom: 20px;
+        gap: 14px;
+      }
+
+      .nav-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.3rem;
       }
     }
   </style>
@@ -654,6 +730,19 @@
       updateSlide();
     }
 
+    // Touch swipe navigation
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    document.addEventListener('touchend', (e) => {
+      const delta = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(delta) > 50) {
+        if (delta > 0 && currentSlide < totalSlides) changeSlide(1);
+        else if (delta < 0 && currentSlide > 1) changeSlide(-1);
+      }
+    }, { passive: true });
+
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === ' ') {
@@ -751,14 +840,17 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
-      const centerX = canvas.width - 200;
-      const centerY = 150;
+      const isMobile = canvas.width < 768;
+      const centerX = isMobile ? canvas.width - 60 : canvas.width - 200;
+      const centerY = isMobile ? 70 : 150;
+      const orbitStep = isMobile ? 18 : 35;
+      const baseOrbitRadius = isMobile ? 20 : 40;
       const particles = [];
       const orbits = 4;
       const particlesPerOrbit = 15;
 
       for (let orbit = 0; orbit < orbits; orbit++) {
-        const radius = 40 + orbit * 35;
+        const radius = baseOrbitRadius + orbit * orbitStep;
         for (let i = 0; i < particlesPerOrbit; i++) {
           particles.push({
             angle: (i / particlesPerOrbit) * Math.PI * 2,
@@ -801,7 +893,7 @@
         ctx.lineWidth = 1.5;
         for (let orbit = 0; orbit < orbits; orbit++) {
           ctx.beginPath();
-          const radius = 40 + orbit * 35;
+          const radius = baseOrbitRadius + orbit * orbitStep;
           ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
           ctx.stroke();
         }
