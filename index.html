@@ -378,12 +378,9 @@
       }
 
       .footer {
-        bottom: auto;
-        top: auto;
-        position: relative;
-        text-align: right;
-        margin-top: 20px;
-        right: 0;
+        position: absolute;
+        bottom: 70px;
+        right: 24px;
         font-size: 0.9rem;
       }
 
@@ -391,6 +388,32 @@
         padding: 14px 28px;
         font-size: 1.2rem;
         margin-top: 24px;
+      }
+
+      #slide-12 .content {
+        transform: scale(0.55);
+        transform-origin: top left;
+        max-width: none;
+        width: 180vw;
+      }
+
+      #slide-12 h2 {
+        font-size: 1.2rem;
+        margin-bottom: 16px;
+      }
+
+      .journey-table {
+        grid-template-columns: 80px repeat(5, 1fr);
+        gap: 4px;
+      }
+
+      .journey-label {
+        font-size: 0.7rem;
+      }
+
+      .journey-cell {
+        font-size: 0.7rem;
+        padding: 6px 8px;
       }
 
       .nav-controls {
